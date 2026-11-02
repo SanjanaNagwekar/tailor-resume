@@ -4,6 +4,14 @@ Tailor is a browser-based resume tailoring tool for people who keep their resume
 
 Tailor keeps the original LaTeX source as the formatting source of truth. It reads a pasted job description, proposes evidence-backed wording changes, asks before adding skills that are not already explicit, and compiles the revised source into a one-page PDF.
 
+## Try it
+
+[Open Tailor](https://sanjananagwekar.github.io/tailor-resume/)
+
+[![Tailor interface with a LaTeX resume preview](docs/tailor-ui.jpg)](https://sanjananagwekar.github.io/tailor-resume/)
+
+The hosted version runs entirely in the browser. You can load either included example resume to try the workflow without using your own information.
+
 ## What it does
 
 - Maintains a local library of LaTeX base resumes
