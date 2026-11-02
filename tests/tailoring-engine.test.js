@@ -114,9 +114,41 @@ assert.equal(
   'normal grammatical variants must receive the same evidence credit',
 );
 
+const startupJob = `THE ROLE
+We are looking for product-minded Full Stack Engineers to build scalable and robust core product infrastructure for customers at a fast-paced AI-first startup.
+WHAT YOU'LL DO
+Build interfaces for enterprise workflows, develop intuitive UX for non-technical users, create enterprise-grade backend services, and shape product direction.
+WHAT'S IN YOUR TOOLBOX
+You have shipped production features across frontend and backend and understand APIs, databases, authentication, and deployment. You use AI coding tools, verify outputs, write tests, and monitor production systems.
+WHAT WE ARE LOOKING FOR
+Clear communication, comfort with ambiguity, high initiative, and an ownership mindset.`;
+const startupProfile = { sections: [
+  { name: 'Experience', entries: [{ title: 'Software Engineer', bullets: [
+    'Designed and shipped multi-tenant data and credential isolation for a cloud document platform using Redis, PostgreSQL, and Kubernetes; eliminated a 17-second startup API call through caching and concurrency controls.',
+    'Instrumented document extraction with OpenTelemetry and Prometheus to expose latency and cost bottlenecks.',
+    'Owned dashboard delivery from requirements through implementation and stakeholder iteration, reducing lookup time by 80%.',
+  ] }] },
+  { name: 'Technical Skills', text: 'Python, TypeScript, React, Next.js, Express, PostgreSQL, Auth0, Vercel, pytest' },
+] };
+const startupBefore = analyze(startupJob, startupProfile, JSON.stringify(startupProfile));
+assert.ok(startupBefore.keys.length >= 12, 'a detailed engineering posting must not collapse to only a handful of scoreable terms');
+assert.ok(!startupBefore.hits.includes('startup'), 'startup API latency must not be mistaken for startup-company experience');
+assert.ok(!startupBefore.priorities.some(priority => priority.id === 'data_migration'), 'feedback language must not match the standalone DBA acronym');
+const startupWithConfirmedSkill = JSON.parse(JSON.stringify(startupProfile));
+startupWithConfirmedSkill.sections[1].text += ' · AI Coding Tools';
+const startupSkillScore = scoreMatch(startupJob, startupWithConfirmedSkill, JSON.stringify(startupWithConfirmedSkill));
+assert.ok(startupSkillScore.score - startupBefore.score <= 5, 'one confirmed tool must never add more than five score points');
+const startupTailored = JSON.parse(JSON.stringify(startupProfile));
+startupTailored.sections[0].entries[0].bullets = startupTailored.sections[0].entries[0].bullets.map(
+  bullet => startupBefore.changes.find(change => change.text === bullet)?.after || bullet,
+);
+const startupTailoredScore = scoreMatch(startupJob, startupTailored, JSON.stringify(startupTailored));
+assert.ok(startupTailoredScore.score > startupBefore.score, 'a supported product-infrastructure rewrite must improve the rescored match');
+
 console.log(JSON.stringify({
   support: { before: supportResult.score, changes: supportResult.changes.length },
   fullstack: { before: fullstackResult.score, after: estimate, changes: fullstackResult.changes.length },
   consulting: { before: consultantBefore.score, after: consultantAfter.score, changes: consultantBefore.changes.length },
+  startup: { before: startupBefore.score, afterSkill: startupSkillScore.score, afterEdits: startupTailoredScore.score, changes: startupBefore.changes.length },
 }, null, 2));
 

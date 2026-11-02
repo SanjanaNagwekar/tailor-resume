@@ -22,6 +22,8 @@
     { id: 'cloud_saas', label: 'SaaS and cloud delivery', role: ['saas', 'cloud technologies', 'cloud advisory', 'platform capabilities', 'cloud platform'], evidence: ['cloud', 'aws', 'kubernetes', 'docker', 'openshift', 'deployed', 'platform'] },
     { id: 'security_identity', label: 'Security, identity, and access', role: ['information security', 'single sign-on', 'oauth', 'saml', 'openid', 'active directory', 'secure'], evidence: ['credential isolation', 'authentication', 'authorization', 'oauth', 'auth0', 'security', 'rate limiting', 'private storage'] },
     { id: 'data_migration', label: 'Data analysis, mapping, and migration', role: ['data analysis', 'data mapping', 'data migration', 'content migrations', 'etl', 'dba'], evidence: ['etl', 'dataframe', 'consolidat', 'data-gap', 'data gap', 'mapping', 'migration'] },
+    { id: 'product_engineering', label: 'Product-minded software engineering', role: ['product minded', 'product direction', 'product suite', 'product infrastructure', 'real world products'], evidence: ['full-stack', 'built', 'shipped', 'deployed', 'user experience', 'requirements', 'figma', 'prototype'] },
+    { id: 'ownership', label: 'Ownership, initiative, and ambiguity', role: ['full ownership', 'ownership mindset', 'high initiative', 'agency', 'comfort with ambiguity', 'ambiguity'], evidence: ['owned', 'end-to-end', 'proposed', 'independent', 'initiative'] },
     { id: 'technical', label: 'Hands-on engineering', role: ['ship code', 'software engineer', 'codebase', 'hands-on', 'engineering'], evidence: ['engineer', 'built', 'implemented', 'shipped', 'refactored', 'python', 'java', 'typescript'] },
     { id: 'communication', label: 'Clear technical communication', role: ['communicate clearly', 'communicate', 'empathy', 'simplify complex', 'voice of the customer'], evidence: ['communicat', 'stakeholder', 'requirements', 'presentation', 'customer', 'user'] },
     { id: 'data_systems', label: 'Data systems, schemas, and access', role: ['schema changes', 'data systems', 'lab data', 'data checks', 'data pipelines', 'permission structure', 'queryable', 'metadata'], evidence: ['schema', 'data', 'pipeline', 'postgres', 'sql', 'permission', 'credential', 'access', 'etl'] },
@@ -32,7 +34,7 @@
     { id: 'execution', label: 'End-to-end execution', role: ['ship', 'launch', 'execution', 'delivery', 'discovery'], evidence: ['ship', 'launch', 'deliver', 'release', 'built', 'created', 'implemented'] },
   ];
 
-  const importantTerms = ['support engineering', 'support queue', 'triage', 'debugging', 'diagnostics', 'automation', 'internal dashboards', 'internal products', 'developer experience', 'developer tools', 'open source', 'github', 'discord', 'go', 'gpu', 'ml infrastructure', 'model deployment', 'documentation', 'error messages', 'lims', 'eln', 'benchling', 'schema changes', 'ai coding tools', 'lab data', 'rest apis', 'pytest', 'product strategy', 'product judgment', 'roadmap', 'customer research', 'cross-functional', 'success metrics', 'requirements', 'adoption', 'user workflows', 'full-stack', 'realtime', 'webrtc', 'websockets', 'streaming video', 'state synchronization', 'protobuf', 'grpc', 'on-prem', 'on-device', 'degraded network', 'versioning', 'teleoperation', 'robotics', 'safety-critical', 'hardware', 'observability', 'sql', 'experimentation', 'apis', 'machine learning', 'stakeholder management', 'typescript', 'react', 'python', 'java', 'aws', 'gcp', 'ci/cd', 'figma', 'kubernetes', 'prometheus', 'opentelemetry', 'technical advisor', 'business requirements', 'scalable solutions', 'api integrations', 'production-grade', 'ai workflows', 'content migrations', 'technical discovery', 'architectural reviews', 'customer outcomes', 'saas', 'cloud technologies', 'application development lifecycle', 'apis at scale', 'oauth', 'data analysis', 'data mapping', 'data migration', 'end-to-end', 'etl', 'information security'];
+  const importantTerms = ['support engineering', 'support queue', 'triage', 'debugging', 'diagnostics', 'automation', 'internal dashboards', 'internal products', 'developer experience', 'developer tools', 'open source', 'github', 'discord', 'go', 'gpu', 'ml infrastructure', 'model deployment', 'documentation', 'error messages', 'lims', 'eln', 'benchling', 'schema changes', 'ai coding tools', 'ai agents', 'lab data', 'rest apis', 'pytest', 'testing', 'monitoring', 'product strategy', 'product judgment', 'product direction', 'product infrastructure', 'roadmap', 'customer research', 'cross-functional', 'success metrics', 'requirements', 'adoption', 'user workflows', 'user experience', 'full-stack', 'frontend', 'backend', 'databases', 'authentication', 'deployment', 'enterprise workflows', 'ownership', 'initiative', 'ambiguity', 'startup', 'realtime', 'webrtc', 'websockets', 'streaming video', 'state synchronization', 'protobuf', 'grpc', 'on-prem', 'on-device', 'degraded network', 'versioning', 'teleoperation', 'robotics', 'safety-critical', 'hardware', 'observability', 'sql', 'experimentation', 'apis', 'machine learning', 'stakeholder management', 'typescript', 'react', 'python', 'java', 'aws', 'gcp', 'ci/cd', 'figma', 'kubernetes', 'prometheus', 'opentelemetry', 'technical advisor', 'business requirements', 'scalable solutions', 'api integrations', 'production-grade', 'ai workflows', 'content migrations', 'technical discovery', 'architectural reviews', 'customer outcomes', 'saas', 'cloud technologies', 'application development lifecycle', 'apis at scale', 'oauth', 'data analysis', 'data mapping', 'data migration', 'end-to-end', 'etl', 'information security'];
   const termAliases = {
     'rest apis': ['rest api', 'restful api'],
     'api integrations': ['api integration', 'api integrations'],
@@ -40,6 +42,15 @@
     'scalable solutions': ['scalable solution'],
     'cloud technologies': ['cloud platforms', 'ibm cloud', 'aws'],
     'data analysis': ['data-gap analysis', 'data gap analysis'],
+    'full-stack': ['fullstack', 'full stack'],
+    'authentication': ['auth0', 'oauth', 'authentication'],
+    'deployment': ['deploy', 'deployed'],
+    'testing': ['tests', 'pytest', 'testing'],
+    'monitoring': ['monitor', 'monitoring', 'prometheus', 'opentelemetry'],
+    'user experience': ['user experience', 'ux'],
+    'frontend': ['frontend', 'front-end', 'react', 'angular'],
+    'databases': ['database', 'databases', 'postgresql', 'sqlite', 'oracle'],
+    'ownership': ['ownership', 'owned', 'owning'],
     'end-to-end': ['end to end'],
     'saas': ['saas'],
   };
@@ -62,7 +73,8 @@
     { key: 'success metrics', label: 'Success metrics', conceptId: 'analytics', evidence: /metric|dashboard|activation|adoption|retention|experiment|reduc|improv|\d+%/i },
   ];
   const normalize = value => String(value || '').toLowerCase().replace(/[–—-]/g, ' ').replace(/[^a-z0-9+#/. ]+/g, ' ').replace(/\s+/g, ' ').trim();
-  const stemToken = token => {
+  const stemToken = rawToken => {
+    const token = rawToken.replace(/^[./]+|[./]+$/g, '');
     if (token.length <= 3 || /[+#/.]/.test(token)) return token;
     if (token.endsWith('ies') && token.length > 4) return `${token.slice(0, -3)}y`;
     if (token.endsWith('ing') && token.length > 5) {
@@ -80,7 +92,17 @@
     return token;
   };
   const canonicalize = value => normalize(value).split(' ').map(stemToken).join(' ');
-  const countTerm = (text, term) => text.split(term).length - 1;
+  const prefixTerms = new Set(['automat', 'collaborat', 'communicat', 'consolidat', 'diagnos', 'improv', 'prioriti']);
+  function countTerm(text, term) {
+    const haystack = canonicalize(text).split(' ').filter(Boolean), needle = canonicalize(term).split(' ').filter(Boolean);
+    if (!needle.length || haystack.length < needle.length) return 0;
+    let count = 0;
+    for (let start = 0; start <= haystack.length - needle.length; start++) {
+      const matches = needle.every((token, offset) => haystack[start + offset] === token || (prefixTerms.has(token) && haystack[start + offset].startsWith(token)));
+      if (matches) count++;
+    }
+    return count;
+  }
   const sentences = text => String(text || '').split(/\n|(?<=[.!?])\s+/).map(s => s.replace(/^[•*-]\s*/, '').trim()).filter(s => s.length > 12);
   const evidenceVerb = /^(?:achieved|analyzed|architected|assess|assessed|automated|built|collaborated|conducted|created|debugged|defined|delivered|designed|developed|diagnosed|drove|established|implemented|improved|increased|instrumented|integrated|launched|led|maintain|maintained|managed|optimized|owned|owning|partnered|provided|reduced|refactored|resolved|shipped|support|supported|translated|troubleshot|used|work|worked)\b/i;
 
@@ -92,7 +114,7 @@
 
   function focusJobDescription(jd) {
     let text = String(jd || '').replace(/\r/g, '');
-    const roleStartMarkers = [/\bWHY [A-Z0-9 '&-]+ NEEDS YOU\b/i, /\bABOUT THE ROLE\b/i, /\bWHAT YOU(?:'|’)LL DO\b/i];
+    const roleStartMarkers = [/\bWHY [A-Z0-9 '&-]+ NEEDS YOU\b/i, /\bABOUT THE ROLE\b/i, /\bTHE ROLE\b/i, /\bWHAT YOU(?:'|’)LL DO\b/i];
     const starts = roleStartMarkers.map(marker => text.search(marker)).filter(index => index >= 0);
     if (starts.length) text = text.slice(Math.min(...starts));
     const stopMarkers = [
@@ -111,11 +133,7 @@
   }
 
   function conceptScore(text, terms) {
-    const lower = normalize(text), canonical = canonicalize(text);
-    return terms.reduce((score, term) => {
-      const rawTerm = normalize(term), canonicalTerm = canonicalize(term);
-      return score + Math.max(countTerm(lower, rawTerm), countTerm(canonical, canonicalTerm));
-    }, 0);
+    return terms.reduce((score, term) => score + countTerm(text, term), 0);
   }
 
   function looksLikeEvidence(text) {
@@ -131,7 +149,9 @@
       if (!score) return null;
       const evidenceSentence = jdSentences.find(sentence => concept.role.some(term => normalize(sentence).includes(normalize(term)))) || '';
       const matches = bullets.map(bullet => ({ ...bullet, strength: conceptScore(bullet.text, concept.evidence) })).filter(match => match.strength && looksLikeEvidence(match.text)).sort((a, b) => b.strength - a.strength);
-      return { ...concept, score, evidence: evidenceSentence, matches, supported: matches.length > 0 };
+      const bestStrength = matches[0]?.strength || 0;
+      const evidenceQuality = matches.length ? Math.min(1, (bestStrength + Math.min(2, matches.length - 1) * 0.25) / 3) : 0;
+      return { ...concept, score, evidence: evidenceSentence, matches, supported: matches.length > 0, evidenceQuality };
     }).filter(Boolean).sort((a, b) => b.score - a.score);
   }
 
@@ -141,6 +161,9 @@
     if ((ids.has('security_identity') || ids.has('architecture')) && /^Designed and shipped multi-tenant data and credential isolation\b/i.test(text) && !/production-grade/i.test(text)) {
       text = text.replace(/^Designed and shipped /i, 'Designed and shipped secure, production-grade ');
       reason = 'Surfaces the security and production scope already supported by the credential-isolation implementation.';
+    } else if (ids.has('product_engineering') && /^Designed and shipped multi-tenant data and credential isolation\b/i.test(text) && !/product infrastructure/i.test(text)) {
+      text = text.replace(/^Designed and shipped /i, 'Built scalable product infrastructure by designing and shipping ');
+      reason = 'Connects the existing multi-tenant cloud implementation to the role’s core product-infrastructure responsibility.';
     } else if (ids.has('consulting') && /^Owned dashboard delivery from Figma design sprint and requirements and data-gap analysis through Power BI implementation, automated refreshes, and stakeholder iteration, reducing vehicle-information lookup time by 80%\.?$/i.test(text)) {
       text = 'Translated business requirements and data-gap analysis into a Power BI dashboard, owning technical discovery from Figma design sprint through implementation, automated refreshes, and stakeholder iteration; reduced vehicle-information lookup time by 80%.';
       reason = 'Leads with the existing requirements translation, delivery ownership, and quantified business result.';
@@ -204,12 +227,12 @@
 
   function directTerms(jd) {
     const focusedJd = focusJobDescription(jd);
-    const lower = normalize(focusedJd);
     const selected = importantTerms.filter(term => {
       const n = normalize(term);
       if (n === 'go') return /\bgo(?: experience| code| language|\b)/i.test(focusedJd);
       if (n === 'debugging') return /\bdebug(?:ging|ged)?\b/i.test(focusedJd);
-      return [term, ...(termAliases[term] || [])].some(alias => lower.includes(normalize(alias)));
+      if (n === 'startup') return /\b(?:startup|start-up)\s+(?:company|environment|team|role|culture)|\bfast-paced\s+(?:ai-first\s+)?startup\b/i.test(focusedJd);
+      return [term, ...(termAliases[term] || [])].some(alias => countTerm(focusedJd, alias) > 0);
     });
     return selected.filter(term => !selected.some(other => other !== term && normalize(other).includes(normalize(term))));
   }
@@ -218,20 +241,21 @@
     const normalizedText = normalize(text), normalizedTerm = normalize(term);
     if (normalizedTerm === 'go') return /(?:^|\s)go(?:\s|$)/.test(normalizedText);
     if (normalizedTerm === 'debugging') return /\bdebug(?:ging|ged)?\b/.test(normalizedText);
-    return [term, ...(termAliases[term] || [])].some(alias => normalizedText.includes(normalize(alias)));
+    if (normalizedTerm === 'startup') return /\b(?:startup|start up)\s+(?:company|environment|team|role|culture)|\bfast paced\s+(?:ai first\s+)?startup\b/.test(normalizedText);
+    return [term, ...(termAliases[term] || [])].some(alias => countTerm(text, alias) > 0);
   }
 
   function confirmableSkills(jd, resumeText) {
-    const job = normalize(focusJobDescription(jd)), resume = normalize(resumeText);
-    return skillCatalog.filter(skill => skill.aliases.some(alias => job.includes(normalize(alias))) && !skill.aliases.some(alias => resume.includes(normalize(alias))));
+    const job = focusJobDescription(jd), resume = String(resumeText || '');
+    return skillCatalog.filter(skill => skill.aliases.some(alias => countTerm(job, alias) > 0) && !skill.aliases.some(alias => countTerm(resume, alias) > 0));
   }
 
   function calculateScore(priorities, keys, hits) {
     const weightedTotal = priorities.reduce((sum, priority) => sum + priority.score, 0);
-    const weightedSupported = priorities.filter(priority => priority.supported).reduce((sum, priority) => sum + priority.score, 0);
+    const weightedSupported = priorities.reduce((sum, priority) => sum + priority.score * (priority.evidenceQuality || 0), 0);
     const evidenceCoverage = weightedTotal ? weightedSupported / weightedTotal : 0;
     const directCoverage = keys.length ? hits.length / keys.length : 0;
-    const keywordWeight = 0.55, evidenceWeight = 0.45;
+    const keywordWeight = Math.min(0.5, keys.length * 0.05), evidenceWeight = 1 - keywordWeight;
     const score = Math.round((directCoverage * keywordWeight + evidenceCoverage * evidenceWeight) * 100);
     return {
       score,
