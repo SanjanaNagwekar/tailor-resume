@@ -56,7 +56,19 @@ tailoredProfile.sections[0].entries[0].bullets = tailoredProfile.sections[0].ent
 );
 const rescored = scoreMatch(fullstackJob, tailoredProfile, JSON.stringify(tailoredProfile));
 const estimate = estimateTailoredScore(fullstackResult.score, rescored.score, { wording: fullstackResult.changes.length, skills: 0, phrases: 0 });
-assert.ok(estimate > fullstackResult.score, `accepted edits should improve the estimated score (${fullstackResult.score} → ${estimate})`);
+assert.equal(estimate, rescored.score, 'the after score must come from rescoring the final resume, not the number of accepted edits');
+
+const keywordStuffedProfile = { sections: [
+  { name: 'Experience', entries: [{ title: 'Candidate', bullets: [
+    'React Python PostgreSQL GitHub CI/CD support debugging diagnostics internal tooling',
+  ] }] },
+] };
+const keywordStuffed = scoreMatch(supportJob, keywordStuffedProfile, JSON.stringify(keywordStuffedProfile));
+assert.equal(keywordStuffed.breakdown.evidence.score, 0, 'a keyword list without an evidence-bearing statement must not receive responsibility credit');
+assert.ok(keywordStuffed.score <= keywordStuffed.breakdown.keywords.weight, 'keyword presence alone must not produce a high overall match');
+
+const countOnlyLift = estimateTailoredScore(20, 20, { wording: 12, skills: 8, phrases: 4 });
+assert.equal(countOnlyLift, 20, 'accepted edit counts must never inflate the score');
 
 console.log(JSON.stringify({
   support: { before: supportResult.score, changes: supportResult.changes.length },

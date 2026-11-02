@@ -49,6 +49,7 @@
   const normalize = value => String(value || '').toLowerCase().replace(/[–—-]/g, ' ').replace(/[^a-z0-9+#/. ]+/g, ' ').replace(/\s+/g, ' ').trim();
   const countTerm = (text, term) => text.split(term).length - 1;
   const sentences = text => String(text || '').split(/\n|(?<=[.!?])\s+/).map(s => s.replace(/^[•*-]\s*/, '').trim()).filter(s => s.length > 12);
+  const evidenceVerb = /^(?:achieved|analyzed|assess|assessed|automated|built|collaborated|conducted|created|debugged|defined|delivered|designed|developed|diagnosed|drove|established|implemented|improved|increased|instrumented|integrated|launched|led|maintain|maintained|managed|optimized|owned|partnered|provided|reduced|refactored|resolved|shipped|support|supported|troubleshot|used|work|worked)\b/i;
 
   function flattenBullets(profile) {
     const bullets = [];
@@ -61,15 +62,19 @@
     return terms.reduce((score, term) => score + countTerm(lower, normalize(term)), 0);
   }
 
+  function looksLikeEvidence(text) {
+    const value = String(text || '').trim();
+    return value.split(/\s+/).length >= 5 && evidenceVerb.test(value);
+  }
+
   function rolePriorities(jd, bullets, resumeText) {
-    const jdSentences = sentences(jd), combinedResume = normalize(`${resumeText} ${bullets.map(b => b.text).join(' ')}`);
+    const jdSentences = sentences(jd);
     return concepts.map(concept => {
       const score = conceptScore(jd, concept.role);
       if (!score) return null;
       const evidenceSentence = jdSentences.find(sentence => concept.role.some(term => normalize(sentence).includes(normalize(term)))) || '';
-      const matches = bullets.map(bullet => ({ ...bullet, strength: conceptScore(bullet.text, concept.evidence) })).filter(match => match.strength).sort((a, b) => b.strength - a.strength);
-      const skillMatch = concept.evidence.some(term => combinedResume.includes(normalize(term)));
-      return { ...concept, score, evidence: evidenceSentence, matches, supported: matches.length > 0 || skillMatch };
+      const matches = bullets.map(bullet => ({ ...bullet, strength: conceptScore(bullet.text, concept.evidence) })).filter(match => match.strength && looksLikeEvidence(match.text)).sort((a, b) => b.strength - a.strength);
+      return { ...concept, score, evidence: evidenceSentence, matches, supported: matches.length > 0 };
     }).filter(Boolean).sort((a, b) => b.score - a.score);
   }
 
@@ -144,25 +149,36 @@
     return skillCatalog.filter(skill => skill.aliases.some(alias => job.includes(normalize(alias))) && !skill.aliases.some(alias => resume.includes(normalize(alias))));
   }
 
+  function calculateScore(priorities, keys, hits) {
+    const weightedTotal = priorities.reduce((sum, priority) => sum + priority.score, 0);
+    const weightedSupported = priorities.filter(priority => priority.supported).reduce((sum, priority) => sum + priority.score, 0);
+    const evidenceCoverage = weightedTotal ? weightedSupported / weightedTotal : 0;
+    const directCoverage = keys.length ? hits.length / keys.length : 0;
+    const keywordWeight = 0.55, evidenceWeight = 0.45;
+    const score = Math.round((directCoverage * keywordWeight + evidenceCoverage * evidenceWeight) * 100);
+    return {
+      score,
+      evidenceCoverage,
+      directCoverage,
+      breakdown: {
+        keywords: { score: Math.round(directCoverage * 100), weight: Math.round(keywordWeight * 100), matched: hits.length, total: keys.length },
+        evidence: { score: Math.round(evidenceCoverage * 100), weight: Math.round(evidenceWeight * 100), supported: priorities.filter(priority => priority.supported).length, total: priorities.length },
+      },
+    };
+  }
+
   function scoreMatch(jd, profile, resumeText) {
     const bullets = flattenBullets(profile);
     const priorities = rolePriorities(jd, bullets, resumeText);
     const keys = directTerms(jd);
     const base = normalize(`${resumeText} ${JSON.stringify(profile || {})}`);
     const hits = keys.filter(term => hasDirectTerm(base, term));
-    const weightedTotal = priorities.reduce((sum, priority) => sum + priority.score, 0) || 1;
-    const weightedSupported = priorities.filter(priority => priority.supported).reduce((sum, priority) => sum + priority.score, 0);
-    const evidenceCoverage = weightedSupported / weightedTotal;
-    const directCoverage = keys.length ? hits.length / keys.length : 0;
-    const score = Math.max(15, Math.min(95, Math.round(20 + evidenceCoverage * 50 + directCoverage * 25)));
-    return { score, priorities, keys, hits, evidenceCoverage, directCoverage };
+    return { ...calculateScore(priorities, keys, hits), priorities, keys, hits };
   }
 
-  function estimateTailoredScore(baseScore, rescoredScore, counts = {}) {
-    const wordingLift = Math.max(0, Number(counts.wording) || 0);
-    const skillLift = Math.max(0, Number(counts.skills) || 0) * 2;
-    const phraseLift = Math.max(0, Number(counts.phrases) || 0);
-    return Math.min(95, Math.max(rescoredScore, baseScore + wordingLift + skillLift + phraseLift));
+  function estimateTailoredScore(baseScore, rescoredScore) {
+    const value = Number.isFinite(Number(rescoredScore)) ? Number(rescoredScore) : Number(baseScore) || 0;
+    return Math.max(0, Math.min(100, Math.round(value)));
   }
 
   function termRepresented(term, text) {
@@ -215,11 +231,8 @@
       if (previewAfter === previewBase) return null;
       return { ...item, sourceText: evidence.text, evidence: evidence.text, previewAfter };
     }).filter(Boolean);
-    const weightedTotal = priorities.reduce((sum, priority) => sum + priority.score, 0) || 1;
-    const weightedSupported = priorities.filter(priority => priority.supported).reduce((sum, priority) => sum + priority.score, 0);
-    const evidenceCoverage = weightedSupported / weightedTotal, directCoverage = keys.length ? hits.length / keys.length : 0;
-    const score = Math.max(15, Math.min(95, Math.round(20 + evidenceCoverage * 50 + directCoverage * 25)));
-    return { priorities, keys, hits, miss, skillCandidates, experienceCandidates, surfacedTerms, changes, score, evidenceCoverage, directCoverage, automaticLimit };
+    const scoring = calculateScore(priorities, keys, hits);
+    return { priorities, keys, hits, miss, skillCandidates, experienceCandidates, surfacedTerms, changes, ...scoring, automaticLimit };
   }
 
   return { analyze, scoreMatch, estimateTailoredScore, concepts, normalize, safeRewrite, applyExperiencePhrase };
