@@ -1,0 +1,16 @@
+{
+  "name": "tailor-resume",
+  "version": "0.1.0",
+  "private": false,
+  "description": "A browser-based LaTeX resume tailoring tool with evidence-backed edits.",
+  "author": "Sanjana Nagwekar <sanjana.nagwekar1@gmail.com>",
+  "license": "MIT",
+  "scripts": {
+    "dev": "node scripts/serve.js",
+    "test": "node tests/example-resumes.test.js && node tests/tailoring-engine.test.js"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
+
