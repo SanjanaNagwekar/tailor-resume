@@ -1,5 +1,5 @@
 const assert = require('node:assert/strict');
-const { analyze, scoreMatch, estimateTailoredScore, applyExperiencePhrase } = require('../public/tailoring-engine.js');
+const { analyze, scoreMatch, estimateTailoredScore, applyExperiencePhrase, focusJobDescription } = require('../public/tailoring-engine.js');
 
 const supportJob = `Provide developer support for a production web platform.
 Triage and debug technical issues, help users, improve diagnostics, and build internal support tooling.
@@ -70,8 +70,53 @@ assert.ok(keywordStuffed.score <= keywordStuffed.breakdown.keywords.weight, 'key
 const countOnlyLift = estimateTailoredScore(20, 20, { wording: 12, skills: 8, phrases: 4 });
 assert.equal(countOnlyLift, 20, 'accepted edit counts must never inflate the score');
 
+const consultantJob = `WHY BOX NEEDS YOU
+Technical consultants turn business vision into secure, production-grade solutions.
+Translate complex business requirements into scalable solutions and robust API integration strategies.
+Lead technical discovery and architectural reviews and deliver an end-to-end client experience.
+Required skills include SaaS and cloud technologies, Python or Java, RESTful APIs, OAuth, data analysis, ETL, and information security.
+Box lives its values, with community and collaboration being central to our culture.
+EQUAL OPPORTUNITY
+We value community and do not discriminate.`;
+
+const consultantProfile = { sections: [{ name: 'Experience', entries: [{ title: 'Software Engineer', bullets: [
+  'Designed and shipped multi-tenant data and credential isolation for a document platform across cloud providers using Redis, PostgreSQL, and Kubernetes.',
+  'Refactored WDU’s distributed Kubernetes architecture to move VLM image verbalization into Redis-backed, queue-driven AI worker jobs, decoupling AI inference from page processing and enabling independent scaling across worker pods.',
+  'Built and automated an AWS ETL pipeline with Python and PySpark, consolidating 2,000 files and reducing processing time by 65%.',
+  'Owned dashboard delivery from Figma design sprint and requirements and data-gap analysis through Power BI implementation, automated refreshes, and stakeholder iteration, reducing vehicle-information lookup time by 80%.',
+  'Built and deployed a full-stack marketplace supporting discovery, profiles, rentals, and purchases using React, TypeScript, and Express.',
+  'Designed REST APIs and a relational data model, integrated Auth0 authentication, and debugged application-state and data-flow issues across end-to-end user journeys.',
+] }] }] };
+
+const consultantBefore = analyze(consultantJob, consultantProfile, JSON.stringify(consultantProfile));
+const consultantAfterProfile = JSON.parse(JSON.stringify(consultantProfile));
+consultantAfterProfile.sections[0].entries[0].bullets = consultantAfterProfile.sections[0].entries[0].bullets.map(
+  bullet => consultantBefore.changes.find(change => change.text === bullet)?.after || bullet,
+);
+const consultantAfter = scoreMatch(consultantJob, consultantAfterProfile, JSON.stringify(consultantAfterProfile));
+assert.ok(consultantAfter.score > consultantBefore.score, 'fact-supported consulting edits must improve the rescored match');
+assert.ok(consultantBefore.changes.some(change => /production-grade/.test(change.after)));
+assert.ok(consultantBefore.changes.some(change => /business requirements/.test(change.after)));
+assert.ok(consultantBefore.changes.some(change => /scalable solution/.test(change.after)));
+assert.ok(consultantBefore.changes.some(change => /RESTful APIs and API integrations/.test(change.after)));
+assert.ok(!consultantBefore.priorities.some(priority => priority.id === 'open_source'), 'culture and EEO boilerplate must not create an open-source requirement');
+for (const unsupported of ['SAML', 'Active Directory', 'iOS', 'Android']) {
+  assert.ok(consultantBefore.changes.every(change => !change.after.includes(unsupported)), `must not invent ${unsupported}`);
+}
+assert.ok(!focusJobDescription(consultantJob).includes('EQUAL OPPORTUNITY'), 'non-role boilerplate must be excluded from analysis');
+
+const ownershipJob = 'Lead cross-functional delivery and stakeholder management.';
+const ownedProfile = { sections: [{ name: 'Experience', entries: [{ title: 'Engineer', bullets: ['Owned stakeholder delivery across engineering and product teams.'] }] }] };
+const owningProfile = { sections: [{ name: 'Experience', entries: [{ title: 'Engineer', bullets: ['Owning stakeholder delivery across engineering and product teams.'] }] }] };
+assert.equal(
+  scoreMatch(ownershipJob, ownedProfile, JSON.stringify(ownedProfile)).breakdown.evidence.score,
+  scoreMatch(ownershipJob, owningProfile, JSON.stringify(owningProfile)).breakdown.evidence.score,
+  'normal grammatical variants must receive the same evidence credit',
+);
+
 console.log(JSON.stringify({
   support: { before: supportResult.score, changes: supportResult.changes.length },
   fullstack: { before: fullstackResult.score, after: estimate, changes: fullstackResult.changes.length },
+  consulting: { before: consultantBefore.score, after: consultantAfter.score, changes: consultantBefore.changes.length },
 }, null, 2));
 

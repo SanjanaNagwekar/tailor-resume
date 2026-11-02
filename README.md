@@ -28,10 +28,10 @@ The hosted version runs entirely in the browser. You can load either included ex
 
 Tailor reports a job-specific estimate with two visible components:
 
-- **Exact job terms (55%)** checks whether important terms from the posting are present in the resume.
+- **Job terms and close equivalents (55%)** checks whether important requirements from the role are represented in the resume, including limited aliases such as `REST API` and `RESTful API`.
 - **Evidence-backed responsibilities (45%)** checks whether resume bullets contain action-oriented evidence related to the role's priorities.
 
-The final resume is rescored after every accepted change. Accepting an edit does not increase the score by itself. Tailor's score is designed as an explainable comparison tool, not as a score produced by an employer's ATS or a prediction of an interview.
+The analyzer excludes common benefits, compensation, privacy, and equal-opportunity boilerplate before identifying role requirements. It also normalizes ordinary grammatical variants such as `owned` and `owning`. The final resume is rescored after every accepted change using the same parsed representation as the original. Accepting an edit does not increase the score by itself. Tailor's score is designed as an explainable comparison tool, not as a score produced by an employer's ATS or a prediction of an interview.
 
 ## Privacy model
 
@@ -55,7 +55,7 @@ Open `http://localhost:4174`.
 npm test
 ```
 
-The current tests cover role analysis, evidence-backed edits, unsupported-experience guardrails, approval candidates, and before-and-after scoring.
+The current tests cover role analysis, evidence-backed edits, unsupported-experience guardrails, approval candidates, boilerplate removal, grammatical variants, and before-and-after scoring.
 
 ## Project structure
 
