@@ -4,7 +4,7 @@
   else root.TailorEngine = engine;
 })(typeof window !== 'undefined' ? window : this, function () {
   const concepts = [
-    { id: 'support', label: 'Developer support and issue ownership', role: ['support queue', 'support systems', 'support engineering', 'helping users', 'unblock', 'answering questions'], evidence: ['support queue', 'support engineer', 'support specialist', 'customer-facing support', 'helped users', 'unblocked', 'ticket', 'troubleshoot'] },
+    { id: 'support', label: 'Developer support and issue ownership', role: ['support queue', 'support systems', 'support engineering', 'helping users', 'unblock', 'answering questions'], evidence: ['support queue', 'support engineer', 'support specialist', 'technical support', 'customer-facing support', 'helped users', 'unblocked', 'ticket', 'troubleshoot'] },
     { id: 'debugging', label: 'Troubleshooting and issue resolution', role: ['triage', 'reproduce', 'resolve issues', 'fix bugs', 'debug', 'stack trace', 'error messages', 'diagnostics'], evidence: ['diagnos', 'debug', 'defect', 'resolved', 'troubleshoot', 'fixed bugs', 'reliability', 'bottleneck', 'observability', 'opentelemetry', 'prometheus'] },
     { id: 'automation', label: 'Support automation and internal tooling', role: ['automate', 'automation', 'triage tooling', 'self-serve', 'internal dashboards', 'build a system'], evidence: ['automat', 'dashboard', 'tooling', 'workflow', 'self-serve'] },
     { id: 'observability', label: 'Diagnostics and observability', role: ['diagnostics', 'debugging', 'error messages', 'spotting patterns', 'where developers get stuck'], evidence: ['diagnos', 'observability', 'opentelemetry', 'prometheus', 'instrument', 'latency', 'bottleneck', 'metrics'] },
@@ -187,7 +187,7 @@
       text = 'Translated business requirements and data-gap analysis into a Power BI dashboard, owning technical discovery from Figma design sprint through implementation, automated refreshes, and stakeholder iteration; reduced vehicle-information lookup time by 80%.';
       reason = 'Leads with the existing requirements translation, delivery ownership, and quantified business result.';
     } else if (ids.has('architecture') && /^Refactored WDU’s distributed Kubernetes architecture to move VLM image verbalization into Redis-backed, queue-driven AI worker jobs,/i.test(text)) {
-      text = text.replace(/^Refactored WDU’s distributed Kubernetes architecture to move /i, 'Architected and delivered a scalable solution using Kubernetes and Redis-backed workers that moved ');
+      text = text.replace(/^Refactored WDU’s distributed Kubernetes architecture to move /i, 'Architected and delivered a scalable distributed Kubernetes architecture with Redis-backed workers that moved ');
       reason = 'Frames the existing distributed-system refactor as solution architecture without changing its implementation.';
     } else if (ids.has('execution') && /^Built and deployed a full-stack marketplace\b/i.test(text) && !/end-to-end/i.test(text)) {
       text = text.replace(/^Built and deployed a /i, 'Built and deployed an end-to-end ');
@@ -307,6 +307,39 @@
     return Math.max(0, Math.min(100, Math.round(value)));
   }
 
+  function profileWithChanges(profile, changes) {
+    const output = JSON.parse(JSON.stringify(profile || {}));
+    for (const section of output.sections || []) for (const entry of section.entries || []) {
+      for (const change of changes) {
+        if (section.name === change.section && entry.title === change.entry) entry.bullets = (entry.bullets || []).map(bullet => bullet === change.text ? change.after : bullet);
+      }
+    }
+    return output;
+  }
+
+  function selectMonotonicChanges(jd, profile, candidates) {
+    if (!candidates.length) return [];
+    const baseline = scoreMatch(jd, profile, JSON.stringify(profile || {})).score;
+    const scores = new Map([[0, baseline]]);
+    for (let mask = 1; mask < (1 << candidates.length); mask++) {
+      const selected = candidates.filter((_, index) => mask & (1 << index));
+      const tailored = profileWithChanges(profile, selected);
+      scores.set(mask, scoreMatch(jd, tailored, JSON.stringify(tailored)).score);
+    }
+    let bestMask = 0, bestScore = baseline, bestCount = 0;
+    for (let mask = 1; mask < (1 << candidates.length); mask++) {
+      let safe = true;
+      for (let subset = mask; ; subset = (subset - 1) & mask) {
+        if ((scores.get(subset) ?? baseline) < baseline) { safe = false; break; }
+        if (subset === 0) break;
+      }
+      if (!safe) continue;
+      const score = scores.get(mask), count = candidates.filter((_, index) => mask & (1 << index)).length;
+      if (score > bestScore || (score === bestScore && count > bestCount)) { bestMask = mask; bestScore = score; bestCount = count; }
+    }
+    return candidates.filter((_, index) => bestMask & (1 << index));
+  }
+
   function termRepresented(term, text) {
     const value = normalize(text);
     if (term === 'debugging') return /\bdebugg(?:ing|ed|er|ers)?\b/.test(value);
@@ -337,13 +370,14 @@
       const matched = priorities.filter(priority => priority.matches.some(match => match.text === bullet.text));
       return { ...bullet, matched, weight: matched.reduce((sum, priority) => sum + priority.score, 0) };
     }).sort((a, b) => b.weight - a.weight);
-    const changes = [], automaticLimit = limit ?? Math.min(5, Math.max(3, Math.ceil(priorities.length * 0.7)));
+    const candidateChanges = [], automaticLimit = limit ?? Math.min(5, Math.max(3, Math.ceil(priorities.length * 0.7)));
     for (const bullet of rankedBullets) {
       if (!bullet.weight) continue;
       const rewrite = safeRewrite(bullet.text, bullet.matched);
-      if (rewrite) changes.push({ section: bullet.section, entry: bullet.entry, text: bullet.text, after: rewrite.after, reason: rewrite.reason, accepted: true, concepts: bullet.matched.map(c => c.label) });
-      if (changes.length >= automaticLimit) break;
+      if (rewrite) candidateChanges.push({ section: bullet.section, entry: bullet.entry, text: bullet.text, after: rewrite.after, reason: rewrite.reason, accepted: true, concepts: bullet.matched.map(c => c.label) });
+      if (candidateChanges.length >= automaticLimit) break;
     }
+    const changes = selectMonotonicChanges(jd, profile, candidateChanges);
     const surfacedTerms = miss.filter(term => changes.some(change => termRepresented(term, change.after)));
     const experienceCandidates = experiencePhraseCatalog.map(item => {
       if (!miss.includes(item.key) || surfacedTerms.includes(item.key)) return null;

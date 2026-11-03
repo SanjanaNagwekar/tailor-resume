@@ -97,7 +97,7 @@ const consultantAfter = scoreMatch(consultantJob, consultantAfterProfile, JSON.s
 assert.ok(consultantAfter.score > consultantBefore.score, 'fact-supported consulting edits must improve the rescored match');
 assert.ok(consultantBefore.changes.some(change => /production-grade/.test(change.after)));
 assert.ok(consultantBefore.changes.some(change => /business requirements/.test(change.after)));
-assert.ok(consultantBefore.changes.some(change => /scalable solution/.test(change.after)));
+assert.ok(consultantBefore.changes.some(change => /scalable (?:solution|distributed Kubernetes architecture)/.test(change.after)));
 assert.ok(consultantBefore.changes.some(change => /RESTful APIs and API integrations/.test(change.after)));
 assert.ok(!consultantBefore.priorities.some(priority => priority.id === 'open_source'), 'culture and EEO boilerplate must not create an open-source requirement');
 for (const unsupported of ['SAML', 'Active Directory', 'iOS', 'Android']) {
@@ -181,11 +181,40 @@ assert.ok(!focusJobDescription(productJob).includes('BENEFITS'), 'benefits must 
 const productSkill = productBefore.skillCandidates.find(skill => skill.key === 'ai coding tools');
 assert.equal(productSkill?.category, 'AI and Technical', 'confirmed AI tools must target an existing PM resume skill category');
 
+const systemsJob = `ABOUT THE ROLE
+Build backend and robotics infrastructure for production products. Design and ship reliable services, APIs, and operational tooling.
+Collaborate across ML and product teams to define requirements and build well-architected systems through strong solution architecture.
+Improve reliability and scalability through testing, observability, incident response, and performance tuning.
+Strong Python, backend services, distributed systems, API design, AWS, Kubernetes, CI/CD, and OpenTelemetry experience.`;
+const systemsProfile = { sections: [
+  { name: 'Experience', entries: [{ title: 'Software Engineer', bullets: [
+    'Designed and shipped multi-tenant data and credential isolation for a document platform across cloud providers using Redis, PostgreSQL, and Kubernetes; eliminated a 17-second startup API call through caching and concurrency controls.',
+    'Refactored WDU’s distributed Kubernetes architecture to move VLM image verbalization into Redis-backed, queue-driven AI worker jobs, decoupling AI inference from page processing and enabling independent scaling across worker pods.',
+    'Instrumented LLM-powered document extraction with OpenTelemetry and Prometheus, capturing runtime and token usage to expose latency and cost bottlenecks.',
+    'Built and deployed a full-stack marketplace using React, TypeScript, Express, and SQLite.',
+    'Designed REST APIs and a relational data model, integrated Auth0 authentication, and debugged application-state issues across end-to-end user journeys.',
+  ] }] },
+  { name: 'Technical Skills', text: 'Python, Backend, Distributed Systems, APIs, AWS, Kubernetes, CI/CD, OpenTelemetry, Testing, Monitoring' },
+] };
+const systemsBefore = analyze(systemsJob, systemsProfile, JSON.stringify(systemsProfile));
+assert.ok(systemsBefore.changes.length >= 3, 'systems roles should still produce several useful edits');
+assert.ok(systemsBefore.changes.some(change => /distributed Kubernetes architecture/.test(change.after)), 'architecture rewrites must preserve strong architecture evidence');
+for (let mask = 0; mask < (1 << systemsBefore.changes.length); mask++) {
+  const tailored = JSON.parse(JSON.stringify(systemsProfile));
+  tailored.sections[0].entries[0].bullets = tailored.sections[0].entries[0].bullets.map(bullet => {
+    const change = systemsBefore.changes.find((candidate, index) => (mask & (1 << index)) && candidate.text === bullet);
+    return change?.after || bullet;
+  });
+  const score = scoreMatch(systemsJob, tailored, JSON.stringify(tailored)).score;
+  assert.ok(score >= systemsBefore.score, 'every user-selectable subset of automatic edits must preserve or improve the original score');
+}
+
 console.log(JSON.stringify({
   support: { before: supportResult.score, changes: supportResult.changes.length },
   fullstack: { before: fullstackResult.score, after: estimate, changes: fullstackResult.changes.length },
   consulting: { before: consultantBefore.score, after: consultantAfter.score, changes: consultantBefore.changes.length },
   startup: { before: startupBefore.score, afterSkill: startupSkillScore.score, afterEdits: startupTailoredScore.score, changes: startupBefore.changes.length },
   product: { before: productBefore.score, after: productAfter.score, changes: productBefore.changes.length },
+  systems: { before: systemsBefore.score, changes: systemsBefore.changes.length },
 }, null, 2));
 

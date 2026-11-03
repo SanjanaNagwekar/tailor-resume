@@ -1,6 +1,6 @@
 {
   "name": "tailor-resume",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "private": false,
   "description": "A browser-based LaTeX resume tailoring tool with evidence-backed edits.",
   "author": "Sanjana Nagwekar <sanjana.nagwekar1@gmail.com>",
