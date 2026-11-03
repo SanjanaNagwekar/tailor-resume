@@ -145,10 +145,47 @@ startupTailored.sections[0].entries[0].bullets = startupTailored.sections[0].ent
 const startupTailoredScore = scoreMatch(startupJob, startupTailored, JSON.stringify(startupTailored));
 assert.ok(startupTailoredScore.score > startupBefore.score, 'a supported product-infrastructure rewrite must improve the rescored match');
 
+const productJob = `ABOUT SELA
+We build mortgage software and offer great benefits.
+WHAT YOU WILL DO
+Direct AI agents through Cursor and Claude Code, own customer requests and relationships, learn customer workflows, and build new voice agents end to end.
+Verify every change through evals and simulations before it goes live.
+WHAT YOU WILL OWN
+Spot patterns across customers, push missing features into the roadmap, and set the quality bar.
+WHAT WE ARE LOOKING FOR
+Clear writing, prioritization judgment, comfort with ambiguity, and curiosity about AI.
+BENEFITS
+Medical and dental coverage.`;
+const productProfile = { sections: [
+  { name: 'Experience', entries: [{ title: 'Product Engineer', bullets: [
+    'Owned AI-platform capabilities from requirements and technical design through implementation, validation, release, and production support, including multi-tenant isolation and scalable VLM processing for a document platform.',
+    'Defined stage-level latency, token-consumption, and confidence signals for LLM-powered extraction, giving the team measurable inputs for performance, cost, and quality prioritization.',
+    "Triaged and resolved 20+ enterprise customer issues spanning document ingestion, extraction confidence, OCR and layout, and input formats; filed defects and validated fixes with an open-source project.",
+    'Owned a vehicle-analytics product through the SDLC, leading a design sprint, creating the Figma prototype, gathering requirements and missing data, and iterating on stakeholder feedback through delivery.',
+  ] }] },
+  { name: 'Skills', text: 'Product Ownership · Model Evaluation · AI and Technical: LLMs, VLMs, Python' },
+] };
+const productBefore = analyze(productJob, productProfile, JSON.stringify(productProfile));
+const productTailored = JSON.parse(JSON.stringify(productProfile));
+productTailored.sections[0].entries[0].bullets = productTailored.sections[0].entries[0].bullets.map(
+  bullet => productBefore.changes.find(change => change.text === bullet)?.after || bullet,
+);
+const productAfter = scoreMatch(productJob, productTailored, JSON.stringify(productTailored));
+assert.ok(productBefore.changes.length >= 3, 'a PM role must produce evidence-backed product wording changes');
+assert.ok(productBefore.changes.some(change => /quality bar/.test(change.after)));
+assert.ok(productBefore.changes.some(change => /customer requests/.test(change.after)));
+assert.ok(productAfter.score > productBefore.score, 'PM wording changes must improve the rescored match');
+assert.ok(!productBefore.keys.includes('go'), 'the phrase go live must not be interpreted as the Go programming language');
+assert.ok(productBefore.changes.every(change => !/voice agents/.test(change.after)), 'voice-agent experience must not be invented');
+assert.ok(!focusJobDescription(productJob).includes('BENEFITS'), 'benefits must be excluded from PM role analysis');
+const productSkill = productBefore.skillCandidates.find(skill => skill.key === 'ai coding tools');
+assert.equal(productSkill?.category, 'AI and Technical', 'confirmed AI tools must target an existing PM resume skill category');
+
 console.log(JSON.stringify({
   support: { before: supportResult.score, changes: supportResult.changes.length },
   fullstack: { before: fullstackResult.score, after: estimate, changes: fullstackResult.changes.length },
   consulting: { before: consultantBefore.score, after: consultantAfter.score, changes: consultantBefore.changes.length },
   startup: { before: startupBefore.score, afterSkill: startupSkillScore.score, afterEdits: startupTailoredScore.score, changes: startupBefore.changes.length },
+  product: { before: productBefore.score, after: productAfter.score, changes: productBefore.changes.length },
 }, null, 2));
 

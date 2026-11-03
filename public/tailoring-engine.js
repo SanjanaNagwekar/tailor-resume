@@ -24,6 +24,8 @@
     { id: 'data_migration', label: 'Data analysis, mapping, and migration', role: ['data analysis', 'data mapping', 'data migration', 'content migrations', 'etl', 'dba'], evidence: ['etl', 'dataframe', 'consolidat', 'data-gap', 'data gap', 'mapping', 'migration'] },
     { id: 'product_engineering', label: 'Product-minded software engineering', role: ['product minded', 'product direction', 'product suite', 'product infrastructure', 'real world products'], evidence: ['full-stack', 'built', 'shipped', 'deployed', 'user experience', 'requirements', 'figma', 'prototype'] },
     { id: 'ownership', label: 'Ownership, initiative, and ambiguity', role: ['full ownership', 'ownership mindset', 'high initiative', 'agency', 'comfort with ambiguity', 'ambiguity'], evidence: ['owned', 'end-to-end', 'proposed', 'independent', 'initiative'] },
+    { id: 'customer_product', label: 'Customer workflow ownership', role: ['talking to them directly', 'customer requests', 'customer relationship', 'customer process', 'customers interact', 'learning what their', 'largest lenders'], evidence: ['enterprise customer issues', 'customer issue triage', 'stakeholder feedback', 'requirements', 'user workflows', 'user journey'] },
+    { id: 'quality_judgment', label: 'Product quality and prioritization judgment', role: ['quality bar', 'good enough', 'worth building', 'judgment about what matters', 'requests than time', 'verified through our evals', 'evals and simulations'], evidence: ['quality prioritization', 'evaluation framework', 'tradeoffs', 'confidence signals', 'product metrics', 'benchmarking', 'projected', 'validated fixes'] },
     { id: 'technical', label: 'Hands-on engineering', role: ['ship code', 'software engineer', 'codebase', 'hands-on', 'engineering'], evidence: ['engineer', 'built', 'implemented', 'shipped', 'refactored', 'python', 'java', 'typescript'] },
     { id: 'communication', label: 'Clear technical communication', role: ['communicate clearly', 'communicate', 'empathy', 'simplify complex', 'voice of the customer'], evidence: ['communicat', 'stakeholder', 'requirements', 'presentation', 'customer', 'user'] },
     { id: 'data_systems', label: 'Data systems, schemas, and access', role: ['schema changes', 'data systems', 'lab data', 'data checks', 'data pipelines', 'permission structure', 'queryable', 'metadata'], evidence: ['schema', 'data', 'pipeline', 'postgres', 'sql', 'permission', 'credential', 'access', 'etl'] },
@@ -34,7 +36,7 @@
     { id: 'execution', label: 'End-to-end execution', role: ['ship', 'launch', 'execution', 'delivery', 'discovery'], evidence: ['ship', 'launch', 'deliver', 'release', 'built', 'created', 'implemented'] },
   ];
 
-  const importantTerms = ['support engineering', 'support queue', 'triage', 'debugging', 'diagnostics', 'automation', 'internal dashboards', 'internal products', 'developer experience', 'developer tools', 'open source', 'github', 'discord', 'go', 'gpu', 'ml infrastructure', 'model deployment', 'documentation', 'error messages', 'lims', 'eln', 'benchling', 'schema changes', 'ai coding tools', 'ai agents', 'lab data', 'rest apis', 'pytest', 'testing', 'monitoring', 'product strategy', 'product judgment', 'product direction', 'product infrastructure', 'roadmap', 'customer research', 'cross-functional', 'success metrics', 'requirements', 'adoption', 'user workflows', 'user experience', 'full-stack', 'frontend', 'backend', 'databases', 'authentication', 'deployment', 'enterprise workflows', 'ownership', 'initiative', 'ambiguity', 'startup', 'realtime', 'webrtc', 'websockets', 'streaming video', 'state synchronization', 'protobuf', 'grpc', 'on-prem', 'on-device', 'degraded network', 'versioning', 'teleoperation', 'robotics', 'safety-critical', 'hardware', 'observability', 'sql', 'experimentation', 'apis', 'machine learning', 'stakeholder management', 'typescript', 'react', 'python', 'java', 'aws', 'gcp', 'ci/cd', 'figma', 'kubernetes', 'prometheus', 'opentelemetry', 'technical advisor', 'business requirements', 'scalable solutions', 'api integrations', 'production-grade', 'ai workflows', 'content migrations', 'technical discovery', 'architectural reviews', 'customer outcomes', 'saas', 'cloud technologies', 'application development lifecycle', 'apis at scale', 'oauth', 'data analysis', 'data mapping', 'data migration', 'end-to-end', 'etl', 'information security'];
+  const importantTerms = ['support engineering', 'support queue', 'triage', 'debugging', 'diagnostics', 'automation', 'internal dashboards', 'internal products', 'developer experience', 'developer tools', 'open source', 'github', 'discord', 'go', 'gpu', 'ml infrastructure', 'model deployment', 'documentation', 'error messages', 'lims', 'eln', 'benchling', 'schema changes', 'ai coding tools', 'ai agents', 'voice agents', 'evals', 'simulations', 'quality bar', 'pattern recognition', 'customer relationship', 'customer requests', 'customer workflows', 'clear writing', 'lab data', 'rest apis', 'pytest', 'testing', 'monitoring', 'product strategy', 'product judgment', 'product direction', 'product infrastructure', 'roadmap', 'prioritization', 'customer research', 'cross-functional', 'success metrics', 'requirements', 'adoption', 'user workflows', 'user experience', 'full-stack', 'frontend', 'backend', 'databases', 'authentication', 'deployment', 'enterprise workflows', 'ownership', 'initiative', 'ambiguity', 'startup', 'realtime', 'webrtc', 'websockets', 'streaming video', 'state synchronization', 'protobuf', 'grpc', 'on-prem', 'on-device', 'degraded network', 'versioning', 'teleoperation', 'robotics', 'safety-critical', 'hardware', 'observability', 'sql', 'experimentation', 'apis', 'machine learning', 'stakeholder management', 'typescript', 'react', 'python', 'java', 'aws', 'gcp', 'ci/cd', 'figma', 'kubernetes', 'prometheus', 'opentelemetry', 'technical advisor', 'business requirements', 'scalable solutions', 'api integrations', 'production-grade', 'ai workflows', 'content migrations', 'technical discovery', 'architectural reviews', 'customer outcomes', 'saas', 'cloud technologies', 'application development lifecycle', 'apis at scale', 'oauth', 'data analysis', 'data mapping', 'data migration', 'end-to-end', 'etl', 'information security'];
   const termAliases = {
     'rest apis': ['rest api', 'restful api'],
     'api integrations': ['api integration', 'api integrations'],
@@ -51,6 +53,11 @@
     'frontend': ['frontend', 'front-end', 'react', 'angular'],
     'databases': ['database', 'databases', 'postgresql', 'sqlite', 'oracle'],
     'ownership': ['ownership', 'owned', 'owning'],
+    'ai coding tools': ['ai coding tools', 'ai coding assistant', 'cursor', 'windsurf', 'claude code'],
+    'evals': ['evals', 'evaluation', 'evaluations'],
+    'customer workflows': ['customer workflow', 'customer workflows', 'customer process', 'customer processes'],
+    'clear writing': ['clear writing', 'strong writer'],
+    'prioritization': ['prioritization', 'prioritize', 'prioritized'],
     'end-to-end': ['end to end'],
     'saas': ['saas'],
   };
@@ -61,7 +68,7 @@
     { key: 'benchling', label: 'Benchling', category: 'Cloud and Data', aliases: ['benchling'] },
     { key: 'gpu', label: 'GPU Infrastructure', category: 'Cloud and Data', aliases: ['gpu infrastructure', 'gpu/ml infrastructure'] },
     { key: 'schema changes', label: 'Schema Design', category: 'Backend and AI', aliases: ['schema changes', 'schema design', 'database schema'] },
-    { key: 'ai coding tools', label: 'AI Coding Tools', category: 'Quality and Observability', aliases: ['ai coding tools', 'ai coding assistant'] },
+    { key: 'ai coding tools', label: 'AI Coding Tools', category: 'Quality and Observability', aliases: ['ai coding tools', 'ai coding assistant', 'cursor', 'windsurf', 'claude code'] },
     { key: 'webrtc', label: 'WebRTC', category: 'Backend and AI', aliases: ['webrtc'] },
     { key: 'websockets', label: 'WebSockets', category: 'Backend and AI', aliases: ['websockets', 'websocket'] },
     { key: 'protobuf', label: 'Protobuf', category: 'Backend and AI', aliases: ['protobuf', 'protocol buffers'] },
@@ -104,7 +111,7 @@
     return count;
   }
   const sentences = text => String(text || '').split(/\n|(?<=[.!?])\s+/).map(s => s.replace(/^[•*-]\s*/, '').trim()).filter(s => s.length > 12);
-  const evidenceVerb = /^(?:achieved|analyzed|architected|assess|assessed|automated|built|collaborated|conducted|created|debugged|defined|delivered|designed|developed|diagnosed|drove|established|implemented|improved|increased|instrumented|integrated|launched|led|maintain|maintained|managed|optimized|owned|owning|partnered|provided|reduced|refactored|resolved|shipped|support|supported|translated|troubleshot|used|work|worked)\b/i;
+  const evidenceVerb = /^(?:achieved|analyzed|architected|assess|assessed|automated|built|collaborated|conducted|created|debugged|defined|delivered|designed|developed|diagnosed|drove|established|implemented|improved|increased|instrumented|integrated|launched|led|maintain|maintained|managed|optimized|owned|owning|partnered|prioritized|provided|reduced|refactored|resolved|shipped|support|supported|translated|triaged|troubleshot|used|work|worked)\b/i;
 
   function flattenBullets(profile) {
     const bullets = [];
@@ -114,7 +121,7 @@
 
   function focusJobDescription(jd) {
     let text = String(jd || '').replace(/\r/g, '');
-    const roleStartMarkers = [/\bWHY [A-Z0-9 '&-]+ NEEDS YOU\b/i, /\bABOUT THE ROLE\b/i, /\bTHE ROLE\b/i, /\bWHAT YOU(?:'|’)LL DO\b/i];
+    const roleStartMarkers = [/\bWHY [A-Z0-9 '&-]+ NEEDS YOU\b/i, /\bABOUT THE ROLE\b/i, /\bTHE ROLE\b/i, /\bWHAT YOU(?:'|’)LL DO\b/i, /\bWHAT YOU WILL DO\b/i];
     const starts = roleStartMarkers.map(marker => text.search(marker)).filter(index => index >= 0);
     if (starts.length) text = text.slice(Math.min(...starts));
     const stopMarkers = [
@@ -158,7 +165,19 @@
   function safeRewrite(original, matchedConcepts) {
     let text = original, reason = '';
     const ids = new Set(matchedConcepts.map(concept => concept.id));
-    if ((ids.has('security_identity') || ids.has('architecture')) && /^Designed and shipped multi-tenant data and credential isolation\b/i.test(text) && !/production-grade/i.test(text)) {
+    if ((ids.has('ai_product') || ids.has('ownership')) && /^Owned AI-platform capabilities from requirements and technical design through implementation, validation, release, and production support,/i.test(text)) {
+      text = text.replace(/^Owned AI-platform capabilities from requirements and technical design through implementation, validation, release, and production support,/i, 'Owned AI-platform capabilities end to end, translating requirements into technical design, implementation, validation, release, and production support,');
+      reason = 'Makes the existing end-to-end AI product ownership explicit without claiming voice-agent experience.';
+    } else if ((ids.has('quality_judgment') || ids.has('model_evaluation')) && /^Defined stage-level latency, token-consumption, and confidence signals for LLM-powered extraction,/i.test(text)) {
+      text = text.replace(/^Defined stage-level latency, token-consumption, and confidence signals for LLM-powered extraction,/i, 'Established the quality bar for LLM-powered extraction by defining evaluation signals for stage-level latency, token consumption, and confidence,');
+      reason = 'Connects the existing measurement framework to the role’s evaluation and quality-bar responsibility.';
+    } else if (ids.has('customer_product') && /^Triaged and resolved 20\+ enterprise customer issues spanning/i.test(text)) {
+      text = text.replace(/^Triaged and resolved 20\+ enterprise customer issues spanning/i, 'Owned resolution of 20+ enterprise customer requests spanning').replace(/; filed defects and validated fixes/i, ', translating reported problems into defects and validated fixes');
+      reason = 'Surfaces the existing ownership of enterprise customer requests and the path from problems to product fixes.';
+    } else if (ids.has('customer_product') && /^Owned a vehicle-analytics product through the SDLC,/i.test(text)) {
+      text = 'Translated stakeholder workflows and missing-data requirements into a vehicle-analytics product, leading the SDLC from design sprint and Figma prototype through stakeholder feedback and delivery.';
+      reason = 'Leads with the existing workflow discovery and translation work most relevant to customer-driven product ownership.';
+    } else if ((ids.has('security_identity') || ids.has('architecture')) && /^Designed and shipped multi-tenant data and credential isolation\b/i.test(text) && !/production-grade/i.test(text)) {
       text = text.replace(/^Designed and shipped /i, 'Designed and shipped secure, production-grade ');
       reason = 'Surfaces the security and production scope already supported by the credential-isolation implementation.';
     } else if (ids.has('product_engineering') && /^Designed and shipped multi-tenant data and credential isolation\b/i.test(text) && !/product infrastructure/i.test(text)) {
@@ -229,9 +248,12 @@
     const focusedJd = focusJobDescription(jd);
     const selected = importantTerms.filter(term => {
       const n = normalize(term);
-      if (n === 'go') return /\bgo(?: experience| code| language|\b)/i.test(focusedJd);
+      if (n === 'go') return /\b(?:golang|go\s+(?:experience|code|language|developer|programming))\b/i.test(focusedJd);
       if (n === 'debugging') return /\bdebug(?:ging|ged)?\b/i.test(focusedJd);
       if (n === 'startup') return /\b(?:startup|start-up)\s+(?:company|environment|team|role|culture)|\bfast-paced\s+(?:ai-first\s+)?startup\b/i.test(focusedJd);
+      if (n === 'customer requests') return /\b(?:customer|lender)[^.!?\n]{0,80}\brequests?\b|\brequests?\s+come\s+to\s+you\b/i.test(focusedJd);
+      if (n === 'customer relationship') return /\b(?:customer|lender)[^.!?\n]{0,100}\brelationship\b|\bown\s+both\s+the\s+work\s+and\s+the\s+relationship\b/i.test(focusedJd);
+      if (n === 'customer workflows') return /\bcustomer(?:'s|s')?\s+(?:workflow|process)|\bwhat\s+their\s+[^.!?\n]{0,50}\bdo\s+all\s+day\b/i.test(focusedJd);
       return [term, ...(termAliases[term] || [])].some(alias => countTerm(focusedJd, alias) > 0);
     });
     return selected.filter(term => !selected.some(other => other !== term && normalize(other).includes(normalize(term))));
@@ -239,7 +261,7 @@
 
   function hasDirectTerm(text, term) {
     const normalizedText = normalize(text), normalizedTerm = normalize(term);
-    if (normalizedTerm === 'go') return /(?:^|\s)go(?:\s|$)/.test(normalizedText);
+    if (normalizedTerm === 'go') return /\b(?:golang|go\s+(?:experience|code|language|developer|programming))\b/.test(normalizedText);
     if (normalizedTerm === 'debugging') return /\bdebug(?:ging|ged)?\b/.test(normalizedText);
     if (normalizedTerm === 'startup') return /\b(?:startup|start up)\s+(?:company|environment|team|role|culture)|\bfast paced\s+(?:ai first\s+)?startup\b/.test(normalizedText);
     return [term, ...(termAliases[term] || [])].some(alias => countTerm(text, alias) > 0);
@@ -247,7 +269,10 @@
 
   function confirmableSkills(jd, resumeText) {
     const job = focusJobDescription(jd), resume = String(resumeText || '');
-    return skillCatalog.filter(skill => skill.aliases.some(alias => countTerm(job, alias) > 0) && !skill.aliases.some(alias => countTerm(resume, alias) > 0));
+    return skillCatalog.filter(skill => skill.aliases.some(alias => countTerm(job, alias) > 0) && !skill.aliases.some(alias => countTerm(resume, alias) > 0)).map(skill => {
+      if (skill.key === 'ai coding tools' && /ai and technical/i.test(resume)) return { ...skill, category: 'AI and Technical' };
+      return skill;
+    });
   }
 
   function calculateScore(priorities, keys, hits) {

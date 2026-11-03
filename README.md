@@ -55,7 +55,7 @@ Open `http://localhost:4174`.
 npm test
 ```
 
-The current tests cover role analysis, evidence-backed edits, unsupported-experience guardrails, approval candidates, boilerplate removal, grammatical variants, and before-and-after scoring.
+The current tests cover engineering and product-management role analysis, evidence-backed edits, unsupported-experience guardrails, approval candidates, boilerplate removal, grammatical variants, and before-and-after scoring.
 
 ## Project structure
 
